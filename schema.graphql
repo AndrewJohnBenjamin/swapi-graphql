@@ -323,6 +323,11 @@ type Person implements Node {
   birthYear: String
 
   """
+  The id of the image for this person
+  """
+  imageId: String
+
+  """
   The eye color of this person. Will be "unknown" if not known or "n/a" if the
   person does not have an eye.
   """

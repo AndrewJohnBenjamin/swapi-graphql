@@ -19,7 +19,6 @@ const localUrlLoader = new DataLoader(urls =>
 function searchUrl(url) {
   return new Promise((resolve, reject) => {
     request.get(url, null, (err, res, body) => {
-      console.log(JSON.stringify('body: ' + body, null, 5));
       const results = JSON.parse(body).results;
       resolve({ objects: results, totalCount: results.length });
     });

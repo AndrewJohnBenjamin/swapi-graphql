@@ -74,6 +74,16 @@ person does not have hair.`,
       resolve: person => convertToNumber(person.mass),
       description: 'The mass of the person in kilograms.',
     },
+    imageId: {
+      type: GraphQLString,
+      resolve: person => {
+        return person.url
+          .split('people/')
+          .pop()
+          .replace('/', '');
+      },
+      description: 'The id of the image for this person',
+    },
     skinColor: {
       type: GraphQLString,
       resolve: person => person.skin_color,
