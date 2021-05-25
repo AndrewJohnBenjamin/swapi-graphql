@@ -645,6 +645,7 @@ type Root {
   film(id: ID, filmID: ID): Film
   allPeople(after: String, first: Int, before: String, last: Int): PeopleConnection
   person(id: ID, personID: ID): Person
+  peopleByName(name: String): PeopleConnection
   allPlanets(after: String, first: Int, before: String, last: Int): PlanetsConnection
   planet(id: ID, planetID: ID): Planet
   allSpecies(after: String, first: Int, before: String, last: Int): SpeciesConnection

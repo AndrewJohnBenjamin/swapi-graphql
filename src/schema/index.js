@@ -1,3 +1,22 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true,
+});
+
+var _graphql = require('graphql');
+
+var _graphqlRelay = require('graphql-relay');
+
+var _apiHelper = require('./apiHelper');
+
+var _relayNode = require('./relayNode');
+
+/**
+ * Creates a root field to get an object of a given type.
+ * Accepts either `id`, the globally unique ID used in GraphQL,
+ * or `idName`, the per-type ID used in SWAPI.
+ */
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -5,27 +24,66 @@
  * This source code is licensed under the license found in the
  * LICENSE-examples file in the root directory of this source tree.
  *
- * @flow strict
+ *  strict
  */
 
-import {
-  GraphQLID,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLObjectType,
-  GraphQLSchema,
-} from 'graphql';
+function getPeopleByName(query) {
+  const graphqlType = (0, _relayNode.swapiTypeToGraphQLType)('people');
+  const { connectionType } = (0, _graphqlRelay.connectionDefinitions)({
+    name: 'SearchPeopleResults',
+    nodeType: graphqlType,
+    connectionFields: () => ({
+      totalCount: {
+        type: _graphql.GraphQLInt,
+        resolve: conn => conn.totalCount,
+        description: `A count of the total number of objects in this connection, ignoring pagination.
+This allows a client to fetch the first five objects by passing "5" as the
+argument to "first", then fetch the total count so it could display "5 of 83",
+for example.`,
+      },
+      people: {
+        type: new _graphql.GraphQLList(graphqlType),
+        resolve: conn => conn.edges.map(edge => edge.node),
+        description: `A list of all of the objects returned in the connection. This is a convenience
+field provided for quickly exploring the API; rather than querying for
+"{ edges { node } }" when no edge data is needed, this field can be be used
+instead. Note that when clients like Relay need to fetch the "cursor" field on
+the edge to enable efficient pagination, this shortcut cannot be used, and the
+full "{ edges { node } }" version should be used instead.`,
+      },
+    }),
+  });
 
-import {
-  fromGlobalId,
-  connectionFromArray,
-  connectionArgs,
-  connectionDefinitions,
-} from 'graphql-relay';
+  return {
+    type: connectionType,
+    args: { name: { type: _graphql.GraphQLString } },
+    resolve: async (_, args) => {
+      const { objects, totalCount } = await (0, _apiHelper.getPeopleByName)(
+        args.name,
+      );
+      return {
+        ...(0, _graphqlRelay.connectionFromArray)(objects, args),
+        totalCount,
+      };
+    },
+  };
 
-import { getObjectsByType, getObjectFromTypeAndId } from './apiHelper';
-
-import { swapiTypeToGraphQLType, nodeField } from './relayNode';
+  // const getter = query => (0, _apiHelper.getPeopleByName)(query);
+  // const argDefs = {
+  //   name: { type: _graphql.GraphQLString },
+  // };
+  // // argDefs.id = { type: GraphQLID };
+  // // argDefs[idName] = { type: GraphQLID };
+  // return {
+  //   type: (0, _relayNode.swapiTypeToGraphQLType)(swapiType),
+  //   args: argDefs,
+  //   resolve: (_, args) => {
+  //     if (args.name !== undefined && args.name !== null) {
+  //       return getter(args.name);
+  //     }
+  //   },
+  // };
+}
 
 /**
  * Creates a root field to get an object of a given type.
@@ -33,20 +91,22 @@ import { swapiTypeToGraphQLType, nodeField } from './relayNode';
  * or `idName`, the per-type ID used in SWAPI.
  */
 function rootFieldByID(idName, swapiType) {
-  const getter = id => getObjectFromTypeAndId(swapiType, id);
+  const getter = id => (0, _apiHelper.getObjectFromTypeAndId)(swapiType, id);
   const argDefs = {};
-  argDefs.id = { type: GraphQLID };
-  argDefs[idName] = { type: GraphQLID };
+  argDefs.id = { type: _graphql.GraphQLID };
+  argDefs[idName] = { type: _graphql.GraphQLID };
+
   return {
-    type: swapiTypeToGraphQLType(swapiType),
+    type: (0, _relayNode.swapiTypeToGraphQLType)(swapiType),
     args: argDefs,
     resolve: (_, args) => {
+      console.log(JSON.stringify(args, null, 5));
       if (args[idName] !== undefined && args[idName] !== null) {
         return getter(args[idName]);
       }
 
       if (args.id !== undefined && args.id !== null) {
-        const globalId = fromGlobalId(args.id);
+        const globalId = (0, _graphqlRelay.fromGlobalId)(args.id);
         if (
           globalId.id === null ||
           globalId.id === undefined ||
@@ -66,13 +126,13 @@ function rootFieldByID(idName, swapiType) {
  * `swapiType`; the connection will be named using `name`.
  */
 function rootConnection(name, swapiType) {
-  const graphqlType = swapiTypeToGraphQLType(swapiType);
-  const { connectionType } = connectionDefinitions({
+  const graphqlType = (0, _relayNode.swapiTypeToGraphQLType)(swapiType);
+  const { connectionType } = (0, _graphqlRelay.connectionDefinitions)({
     name,
     nodeType: graphqlType,
     connectionFields: () => ({
       totalCount: {
-        type: GraphQLInt,
+        type: _graphql.GraphQLInt,
         resolve: conn => conn.totalCount,
         description: `A count of the total number of objects in this connection, ignoring pagination.
 This allows a client to fetch the first five objects by passing "5" as the
@@ -80,7 +140,7 @@ argument to "first", then fetch the total count so it could display "5 of 83",
 for example.`,
       },
       [swapiType]: {
-        type: new GraphQLList(graphqlType),
+        type: new _graphql.GraphQLList(graphqlType),
         resolve: conn => conn.edges.map(edge => edge.node),
         description: `A list of all of the objects returned in the connection. This is a convenience
 field provided for quickly exploring the API; rather than querying for
@@ -93,11 +153,13 @@ full "{ edges { node } }" version should be used instead.`,
   });
   return {
     type: connectionType,
-    args: connectionArgs,
+    args: _graphqlRelay.connectionArgs,
     resolve: async (_, args) => {
-      const { objects, totalCount } = await getObjectsByType(swapiType);
+      const { objects, totalCount } = await (0, _apiHelper.getObjectsByType)(
+        swapiType,
+      );
       return {
-        ...connectionFromArray(objects, args),
+        ...(0, _graphqlRelay.connectionFromArray)(objects, args),
         totalCount,
       };
     },
@@ -107,13 +169,14 @@ full "{ edges { node } }" version should be used instead.`,
 /**
  * The GraphQL type equivalent of the Root resource
  */
-const rootType = new GraphQLObjectType({
+const rootType = new _graphql.GraphQLObjectType({
   name: 'Root',
   fields: () => ({
     allFilms: rootConnection('Films', 'films'),
     film: rootFieldByID('filmID', 'films'),
     allPeople: rootConnection('People', 'people'),
     person: rootFieldByID('personID', 'people'),
+    peopleByName: getPeopleByName('people'),
     allPlanets: rootConnection('Planets', 'planets'),
     planet: rootFieldByID('planetID', 'planets'),
     allSpecies: rootConnection('Species', 'species'),
@@ -122,8 +185,8 @@ const rootType = new GraphQLObjectType({
     starship: rootFieldByID('starshipID', 'starships'),
     allVehicles: rootConnection('Vehicles', 'vehicles'),
     vehicle: rootFieldByID('vehicleID', 'vehicles'),
-    node: nodeField,
+    node: _relayNode.nodeField,
   }),
 });
 
-export default new GraphQLSchema({ query: rootType });
+exports.default = new _graphql.GraphQLSchema({ query: rootType });

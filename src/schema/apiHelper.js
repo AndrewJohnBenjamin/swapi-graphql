@@ -9,12 +9,22 @@
  */
 
 import DataLoader from 'dataloader';
-
+import request from 'request';
 import { getFromLocalUrl } from '../api';
 
 const localUrlLoader = new DataLoader(urls =>
   Promise.all(urls.map(getFromLocalUrl)),
 );
+
+function searchUrl(url) {
+  return new Promise((resolve, reject) => {
+    request.get(url, null, (err, res, body) => {
+      console.log(JSON.stringify('body: ' + body, null, 5));
+      const results = JSON.parse(body).results;
+      resolve({ objects: results, totalCount: results.length });
+    });
+  });
+}
 
 /**
  * Objects returned from SWAPI don't have an ID field, so add one.
@@ -29,7 +39,15 @@ function objectWithId(obj: Object): Object {
  */
 export async function getObjectFromUrl(url: string): Promise<Object> {
   const data = await localUrlLoader.load(url);
+  console.log(JSON.stringify(data, null, 5));
   return objectWithId(data);
+}
+
+/**
+ * Search for people by name
+ */
+export async function getPeopleByName(query: string): Promise<Object> {
+  return await searchUrl(`https://swapi.dev/api/people/?search=${query}`);
 }
 
 /**
