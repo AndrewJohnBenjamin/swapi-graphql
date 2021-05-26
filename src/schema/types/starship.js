@@ -38,6 +38,16 @@ const StarshipType = new GraphQLObjectType({
       description:
         'The name of this starship. The common name, such as "Death Star".',
     },
+    imageId: {
+      type: GraphQLString,
+      resolve: starship => {
+        return starship.url
+          .split('starships/')
+          .pop()
+          .replace('/', '');
+      },
+      description: 'The id of the image for this starship',
+    },
     model: {
       type: GraphQLString,
       description: `The model or official name of this starship. Such as "T-65 X-wing" or "DS-1

@@ -7,6 +7,11 @@ type Film implements Node {
   """The title of this film."""
   title: String
 
+    """
+  The id of the image for this object
+  """
+  imageId: String
+
   """The episode number of this film."""
   episodeID: Int
 
@@ -323,7 +328,7 @@ type Person implements Node {
   birthYear: String
 
   """
-  The id of the image for this person
+  The id of the image for this object
   """
   imageId: String
 
@@ -488,6 +493,11 @@ A large mass, planet or planetoid in the Star Wars Universe, at the time of
 type Planet implements Node {
   """The name of this planet."""
   name: String
+
+  """
+  The id of the image for this object
+  """
+  imageId: String
 
   """The diameter of this planet in kilometers."""
   diameter: Int
@@ -672,6 +682,11 @@ type Species implements Node {
   """The name of this species."""
   name: String
 
+    """
+  The id of the image for this object
+  """
+  imageId: String
+
   """The classification of this species, such as "mammal" or "reptile"."""
   classification: String
 
@@ -832,6 +847,11 @@ type SpeciesPeopleEdge {
 type Starship implements Node {
   """The name of this starship. The common name, such as "Death Star"."""
   name: String
+
+    """
+  The id of the image for this object
+  """
+  imageId: String
 
   """
   The model or official name of this starship. Such as "T-65 X-wing" or "DS-1
@@ -1014,6 +1034,11 @@ type Vehicle implements Node {
   bike".
   """
   name: String
+
+  """
+  The id of the image for this object
+  """
+  imageId: String
 
   """
   The model or official name of this vehicle. Such as "All-Terrain Attack

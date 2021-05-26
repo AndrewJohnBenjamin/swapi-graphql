@@ -38,6 +38,16 @@ const PlanetType = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The name of this planet.',
     },
+    imageId: {
+      type: GraphQLString,
+      resolve: planet => {
+        return planet.url
+          .split('planets/')
+          .pop()
+          .replace('/', '');
+      },
+      description: 'The id of the image for this planet',
+    },
     diameter: {
       type: GraphQLInt,
       resolve: planet => convertToNumber(planet.diameter),

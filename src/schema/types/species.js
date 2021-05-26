@@ -38,6 +38,16 @@ const SpeciesType = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The name of this species.',
     },
+    imageId: {
+      type: GraphQLString,
+      resolve: species => {
+        return species.url
+          .split('species/')
+          .pop()
+          .replace('/', '');
+      },
+      description: 'The id of the image for this species',
+    },
     classification: {
       type: GraphQLString,
       description:

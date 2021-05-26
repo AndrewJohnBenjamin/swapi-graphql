@@ -39,6 +39,16 @@ const VehicleType = new GraphQLObjectType({
       description: `The name of this vehicle. The common name, such as "Sand Crawler" or "Speeder
 bike".`,
     },
+    imageId: {
+      type: GraphQLString,
+      resolve: vehicle => {
+        return vehicle.url
+          .split('vehicles/')
+          .pop()
+          .replace('/', '');
+      },
+      description: 'The id of the image for this vehicle',
+    },
     model: {
       type: GraphQLString,
       description: `The model or official name of this vehicle. Such as "All-Terrain Attack

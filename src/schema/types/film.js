@@ -43,6 +43,16 @@ const FilmType = new GraphQLObjectType({
       resolve: film => film.episode_id,
       description: 'The episode number of this film.',
     },
+    imageId: {
+      type: GraphQLString,
+      resolve: film => {
+        return film.url
+          .split('films/')
+          .pop()
+          .replace('/', '');
+      },
+      description: 'The id of the image for this film',
+    },
     openingCrawl: {
       type: GraphQLString,
       resolve: film => film.opening_crawl,
