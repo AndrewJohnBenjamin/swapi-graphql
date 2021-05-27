@@ -27,10 +27,10 @@ var _relayNode = require('./relayNode');
  *  strict
  */
 
-function getPeopleByName(query) {
-  const graphqlType = (0, _relayNode.swapiTypeToGraphQLType)('people');
+function getObjectsByType(objectType) {
+  const graphqlType = (0, _relayNode.swapiTypeToGraphQLType)(`${objectType}`);
   const { connectionType } = (0, _graphqlRelay.connectionDefinitions)({
-    name: 'SearchPeopleResults',
+    name: `Search${objectType}Results`,
     nodeType: graphqlType,
     connectionFields: () => ({
       totalCount: {
@@ -41,7 +41,7 @@ This allows a client to fetch the first five objects by passing "5" as the
 argument to "first", then fetch the total count so it could display "5 of 83",
 for example.`,
       },
-      people: {
+      [objectType]: {
         type: new _graphql.GraphQLList(graphqlType),
         resolve: conn => conn.edges.map(edge => edge.node),
         description: `A list of all of the objects returned in the connection. This is a convenience
@@ -56,10 +56,15 @@ full "{ edges { node } }" version should be used instead.`,
 
   return {
     type: connectionType,
-    args: { name: { type: _graphql.GraphQLString } },
+    args: {
+      name: { type: _graphql.GraphQLString },
+      title: { type: _graphql.GraphQLString },
+    },
     resolve: async (_, args) => {
-      const { objects, totalCount } = await (0, _apiHelper.getPeopleByName)(
-        args.name,
+      const query = args.name ? args.name : args.title;
+      const { objects, totalCount } = await (0, _apiHelper.queryObjects)(
+        objectType,
+        query,
       );
       return {
         ...(0, _graphqlRelay.connectionFromArray)(objects, args),
@@ -176,7 +181,12 @@ const rootType = new _graphql.GraphQLObjectType({
     film: rootFieldByID('filmID', 'films'),
     allPeople: rootConnection('People', 'people'),
     person: rootFieldByID('personID', 'people'),
-    peopleByName: getPeopleByName('people'),
+    peopleByName: getObjectsByType('people'),
+    planetsByName: getObjectsByType('planets'),
+    filmsByTitle: getObjectsByType('films'),
+    speciesByName: getObjectsByType('species'),
+    vehiclesByName: getObjectsByType('vehicles'),
+    starshipsByName: getObjectsByType('starships'),
     allPlanets: rootConnection('Planets', 'planets'),
     planet: rootFieldByID('planetID', 'planets'),
     allSpecies: rootConnection('Species', 'species'),

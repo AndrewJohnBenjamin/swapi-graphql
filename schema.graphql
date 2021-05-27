@@ -661,6 +661,11 @@ type Root {
   allPeople(after: String, first: Int, before: String, last: Int): PeopleConnection
   person(id: ID, personID: ID): Person
   peopleByName(name: String): PeopleConnection
+  planetsByName(name: String): PlanetsConnection
+  filmsByTitle(title: String): FilmsConnection
+  speciesByName(name: String): SpeciesConnection
+  vehiclesByName(name: String): VehiclesConnection
+  starshipsByName(name: String): StarshipsConnection
   allPlanets(after: String, first: Int, before: String, last: Int): PlanetsConnection
   planet(id: ID, planetID: ID): Planet
   allSpecies(after: String, first: Int, before: String, last: Int): SpeciesConnection

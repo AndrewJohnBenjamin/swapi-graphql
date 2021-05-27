@@ -45,8 +45,13 @@ export async function getObjectFromUrl(url: string): Promise<Object> {
 /**
  * Search for people by name
  */
-export async function getPeopleByName(query: string): Promise<Object> {
-  return await searchUrl(`https://swapi.dev/api/people/?search=${query}`);
+export async function queryObjects(
+  objectType: string,
+  query: string,
+): Promise<Object> {
+  return await searchUrl(
+    `https://swapi.dev/api/${objectType}/?search=${query}`,
+  );
 }
 
 /**
