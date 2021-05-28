@@ -98,7 +98,12 @@ const FilmType = new GraphQLObjectType({
     planetConnection: connectionFromUrls('FilmPlanets', 'planets', PlanetType),
     created: createdField(),
     edited: editedField(),
-    id: globalIdField('films'),
+    id: globalIdField('films', obj =>
+      obj.url
+        .split('films/')
+        .pop()
+        .replace('/', ''),
+    ),
   }),
   interfaces: () => [nodeInterface],
 });

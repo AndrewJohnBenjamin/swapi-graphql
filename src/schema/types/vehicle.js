@@ -107,7 +107,12 @@ entire crew without having to resupply.`,
     filmConnection: connectionFromUrls('VehicleFilms', 'films', FilmType),
     created: createdField(),
     edited: editedField(),
-    id: globalIdField('vehicles'),
+    id: globalIdField('vehicles', obj =>
+      obj.url
+        .split('vehicles/')
+        .pop()
+        .replace('/', ''),
+    ),
   }),
   interfaces: () => [nodeInterface],
 });

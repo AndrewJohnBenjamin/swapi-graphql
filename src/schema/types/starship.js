@@ -121,7 +121,12 @@ entire crew without having to resupply.`,
     filmConnection: connectionFromUrls('StarshipFilms', 'films', FilmType),
     created: createdField(),
     edited: editedField(),
-    id: globalIdField('starships'),
+    id: globalIdField('starships', obj =>
+      obj.url
+        .split('starships/')
+        .pop()
+        .replace('/', ''),
+    ),
   }),
   interfaces: () => [nodeInterface],
 });

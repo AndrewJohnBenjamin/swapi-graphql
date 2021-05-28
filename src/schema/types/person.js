@@ -119,7 +119,12 @@ person does not have hair.`,
     ),
     created: createdField(),
     edited: editedField(),
-    id: globalIdField('people'),
+    id: globalIdField('people', obj =>
+      obj.url
+        .split('people/')
+        .pop()
+        .replace('/', ''),
+    ),
   }),
   interfaces: () => [nodeInterface],
 });

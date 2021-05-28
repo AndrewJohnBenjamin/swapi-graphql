@@ -109,7 +109,12 @@ have skin.`,
     filmConnection: connectionFromUrls('SpeciesFilms', 'films', FilmType),
     created: createdField(),
     edited: editedField(),
-    id: globalIdField('species'),
+    id: globalIdField('species', obj =>
+      obj.url
+        .split('species/')
+        .pop()
+        .replace('/', ''),
+    ),
   }),
   interfaces: () => [nodeInterface],
 });

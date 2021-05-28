@@ -104,7 +104,12 @@ of water.`,
     filmConnection: connectionFromUrls('PlanetFilms', 'films', FilmType),
     created: createdField(),
     edited: editedField(),
-    id: globalIdField('planets'),
+    id: globalIdField('planets', obj =>
+      obj.url
+        .split('planets/')
+        .pop()
+        .replace('/', ''),
+    ),
   }),
   interfaces: () => [nodeInterface],
 });

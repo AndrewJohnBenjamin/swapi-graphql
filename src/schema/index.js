@@ -11,6 +11,7 @@ var _graphqlRelay = require('graphql-relay');
 var _apiHelper = require('./apiHelper');
 
 var _relayNode = require('./relayNode');
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Creates a root field to get an object of a given type.
@@ -30,7 +31,9 @@ var _relayNode = require('./relayNode');
 function getObjectsByType(objectType) {
   const graphqlType = (0, _relayNode.swapiTypeToGraphQLType)(`${objectType}`);
   const { connectionType } = (0, _graphqlRelay.connectionDefinitions)({
-    name: `Search${objectType}Results`,
+    name: `Search${objectType}Results${uuidv4()
+      .split('-')
+      .pop()}`,
     nodeType: graphqlType,
     connectionFields: () => ({
       totalCount: {
@@ -66,28 +69,13 @@ full "{ edges { node } }" version should be used instead.`,
         objectType,
         query,
       );
+      console.log(JSON.stringify(objects, null, 5));
       return {
         ...(0, _graphqlRelay.connectionFromArray)(objects, args),
         totalCount,
       };
     },
   };
-
-  // const getter = query => (0, _apiHelper.getPeopleByName)(query);
-  // const argDefs = {
-  //   name: { type: _graphql.GraphQLString },
-  // };
-  // // argDefs.id = { type: GraphQLID };
-  // // argDefs[idName] = { type: GraphQLID };
-  // return {
-  //   type: (0, _relayNode.swapiTypeToGraphQLType)(swapiType),
-  //   args: argDefs,
-  //   resolve: (_, args) => {
-  //     if (args.name !== undefined && args.name !== null) {
-  //       return getter(args.name);
-  //     }
-  //   },
-  // };
 }
 
 /**
